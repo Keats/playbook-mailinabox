@@ -29,3 +29,6 @@
 
 - name: Start ufw
   command: ufw --force enable
+
+- name: Create mailinabox user
+  user: name={{ user }} state=present

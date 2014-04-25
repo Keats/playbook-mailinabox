@@ -1,5 +1,8 @@
 ---
 
+- name: Creates the ssl directory in user home
+  file: path={{ user_home }}/ssl state=directory
+
 - name: Creates the key
   shell: openssl genrsa -des3 -passout pass:x -out /tmp/server.key 2048
 

@@ -2,6 +2,3 @@
 
 - name: restart nginx
   service: name=nginx state=restarted
-
-- name: restart php-fastcgi
-  service: name=php-fastcgi state=restarted

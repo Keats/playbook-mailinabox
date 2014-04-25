@@ -1,0 +1,27 @@
+---
+
+- name: Install dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+    - php5-sqlite
+
+- name: Extract Roundcube to a tmp directory
+  unarchive: src=roundcubemail-1.0.0.tar.gz dest=/tmp
+
+- name: Removes existing roundcube code
+  file: path=/var/www/roundcube state=absent
+
+- name: Move extracted directory to /var/www
+  shell: mv /tmp/roundcubemail-1.0.0 /var/www/roundcube
+
+- name: Copy our config file
+  template: src=config.inc.php.j2 dest=/var/www/roundcube/config/config.inc.php
+
+- name: Give right ownerships/permission to roundcube
+  file: path=/var/www/roundcube owner=www-data group=www-data recurse=yes
+
+- name: Enable mcrypt
+  shell: php5enmod mcrypt
+
+- name: Create folder in user directory for the database
+  file: path={{ user_home }}/mail/roundcube state=directory owner=www-data group=www-data

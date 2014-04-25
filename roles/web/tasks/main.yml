@@ -19,7 +19,7 @@
   copy: src=nginx-ssl.conf dest=/etc/nginx/nginx-ssl.conf
 
 - name: Copy custom init script for the PHP FastCGI daemon
-  copy: src=php-fastcgi dest=/etc/init.d/php-fastcgi force=yes
+  copy: src=php-fastcgi dest=/etc/init.d/php-fastcgi mode=755 owner=root group=root force=yes
 
 - name: Keept it running after a reboot
   shell: update-rc.d php-fastcgi defaults
@@ -29,3 +29,8 @@
   with_items:
     - http
     - https
+  notify:
+    - restart nginx
+
+- name: Restart php-fastcgi (doesn't work as an handler for some reason)
+  shell: service php-fastcgi restart

@@ -6,10 +6,8 @@
 
   roles:
     #- common
-    #- mailinabox
+    - mailinabox
     #- dns
-    - mail
-    #- dkim
-    #- spamassassin
+    #- mail
     #- roundcube
-    #- nginx
+    #- web

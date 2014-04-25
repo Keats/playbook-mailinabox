@@ -3,8 +3,17 @@
 locale: en_US.UTF-8
 user: user-data
 user_home: /home/{{ user }}
-db_path: "'{{ user_home }}'/mail/users.sqlite"
+user_db_path: "{{ user_home }}/mail/users.sqlite"
+roundcube_db_path: "{{ user_home }}/mail/roundcube/roundcube.sqlite"
 
-# TO CONFIGURE
+
+# TO CONFIGURE ===================
 hostname: mybox.com
 public_ip: 127.0.0.1
+
+# Managing users =================
+# Add commands to be run by mail.py (doc that later)
+user_commands:
+  - user add someone@something.com password
+  - alias add hostmaster@{{ hostname }} someone@something.com
+  - alias add postmaster@{{ hostname }} someone@something.com

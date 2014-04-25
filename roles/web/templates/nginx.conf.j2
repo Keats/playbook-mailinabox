@@ -41,13 +41,13 @@ server {
 	rewrite ^/mail/$ /mail/index.php;
 	location /mail/ {
 		index index.php;
-		alias /var/lib/roundcube/;
+		alias /var/www/roundcube/;
 	}
 	location ~ /mail/.*\.php {
 		include fastcgi_params;
 		fastcgi_split_path_info ^/mail(/.*)()$;
 		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME /var/lib/roundcube/$fastcgi_script_name;
+		fastcgi_param SCRIPT_FILENAME /var/www/roundcube/$fastcgi_script_name;
 		fastcgi_pass unix:/tmp/php-fastcgi.www-data.sock;
 		client_max_body_size 20M;
 	}

@@ -9,6 +9,9 @@
 - name: Create nsd directory
   file: path=/var/run/nsd state=directory
 
+- name: Create dns directory in user home
+  file: path= {{ user_home }}/dns state=directory
+
 - name: Create default zone
   file: path={{ user_home }}/dns/{{ hostname }}.txt
 

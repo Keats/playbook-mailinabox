@@ -35,7 +35,7 @@
     - { src: 'dovecot/99-local.conf.j2', dest: '99-local.conf'}
 
 - name: Copy SQLite database
-  copy: src=users.sqlite dest={{ db_path }}
+  copy: src=users.sqlite dest={{ user_db_path }}
 
 - name: Configure the SQL to query for a user's password.
   template: src=dovecot/dovecot-sql.conf.ext.j2 dest=/etc/dovecot/dovecot-sql.conf.ext mode=0600

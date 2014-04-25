@@ -1,10 +1,8 @@
 ---
 
-- name: Create mailinabox user
-  user: name={{ user }} state=present
+- name: Copy mail.py tool
+  template: src=mail.py.j2 dest={{ user_home }}/mail.py
 
-- name: Create the directories we will need in home
-  file: path={{ item }} state=directory
-  with_items:
-    - "'{{ user_home }}'/dns"
-    - "'{{ user_home }}'/ssl"
+- name: Run mail.py commands
+  shell: python3 {{ user_home }}/mail.py {{ item }}
+  with_items: user_commands

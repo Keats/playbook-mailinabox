@@ -1,4 +1,4 @@
 driver = sqlite
-connect = {{ db_path }}
+connect = {{ user_db_path }}
 default_pass_scheme = SHA512-CRYPT
 password_query = SELECT email as user, password FROM users WHERE email='%u';
