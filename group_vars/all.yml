@@ -8,15 +8,15 @@ roundcube_db_path: "{{ user_home }}/mail/roundcube/roundcube.sqlite"
 
 
 # TO CONFIGURE ===================
-hostname: mybox.com
+hostname: something.com
 public_ip: 127.0.0.1
 
 # Managing users =================
 # Add commands to be run by mail.py (doc that later)
 user_commands:
-  - user add someone@something.com password
-  - alias add hostmaster@{{ hostname }} someone@something.com
-  - alias add postmaster@{{ hostname }} someone@something.com
+  - user add someone@{{ hostname }} password
+  - alias add hostmaster@{{ hostname }} someone@{{ hostname }}
+  - alias add postmaster@{{ hostname }} someone@{{ hostname }}
 
 users:
-  - someone@something.com
+  - someone@{{ hostname }}
