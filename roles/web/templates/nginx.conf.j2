@@ -1,0 +1,56 @@
+# The HTTP (not SSL) server.
+
+server {
+	listen 80;
+	listen [::]:80 default_server ipv6only=on;
+
+	server_name {{ hostname }};
+
+	# We'll expose this directory publicly over http.
+	root {{ user_home }}/www/static;
+
+	index index.html index.htm;
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		try_files $uri $uri/ /index.html;
+	}
+	
+	# Convenience redirect to https.
+	rewrite ^/mail(/.*)?$ https://{{ hostname }}/mail$1 permanent;
+}
+
+# The secure HTTPS server.
+
+server {
+	listen 443 ssl;
+
+	server_name {{ hostname }};
+
+	ssl_certificate {{ user_home }}/ssl/ssl_certificate.pem;
+	ssl_certificate_key {{ user_home }}/ssl/ssl_private_key.pem;
+	include /etc/nginx/nginx-ssl.conf;
+
+	# We'll expose the same static directory under https.
+	root {{ user_home }}/www/static;
+
+	index index.html index.htm;
+
+	# Roundcube Webmail configuration.
+	rewrite ^/mail$ /mail/ redirect;
+	rewrite ^/mail/$ /mail/index.php;
+	location /mail/ {
+		index index.php;
+		alias /var/lib/roundcube/;
+	}
+	location ~ /mail/.*\.php {
+		include fastcgi_params;
+		fastcgi_split_path_info ^/mail(/.*)()$;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME /var/lib/roundcube/$fastcgi_script_name;
+		fastcgi_pass unix:/tmp/php-fastcgi.www-data.sock;
+		client_max_body_size 20M;
+	}
+
+}
+
