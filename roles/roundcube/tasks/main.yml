@@ -11,6 +11,9 @@
 - name: Removes existing roundcube code
   file: path=/var/www/roundcube state=absent
 
+- name: Create www directory if it doesn't exist
+  file: path=/var/www state=directory
+
 - name: Move extracted directory to /var/www
   shell: mv /tmp/roundcubemail-1.0.0 /var/www/roundcube
 

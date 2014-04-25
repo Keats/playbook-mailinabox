@@ -9,3 +9,8 @@
 - name: Run mail.py commands
   shell: python3 {{ user_home }}/mail.py {{ item }}
   with_items: user_commands
+  notify:
+    - restart dovecot
+    - restart postfix
+    - restart opendkim
+    - restart nginx

@@ -32,3 +32,10 @@
 
 - name: Create mailinabox user
   user: name={{ user }} state=present
+
+- name: Create directories inside user home
+  file: path={{ user_home }}/{{ item }} state=directory
+  with_items:
+    - ssl
+    - mail
+    - dns
