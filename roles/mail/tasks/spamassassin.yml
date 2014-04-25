@@ -1,0 +1,31 @@
+---
+
+- name: Install spamassassin packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - spampd
+    - razor
+    - pyzor
+    - dovecot-sieve
+    - dovecot-antispam
+
+- name: Allow spamassassin to download new rules
+  copy: src=spamassassin dest=/etc/default/spamassassin
+
+- name: Configure pyzor
+  shell: pyzor discover
+
+- name: Pass messages on to docevot on port 10026
+  copy: src=spampd dest=/etc/default/spampd
+
+- name: Enable the Dovecot sieve plugin which let's us set a script that automatically moves spam into the user's Spam mail filter
+  copy: src=20-lmtp.conf dest=/etc/dovecot/conf.d/20-lmtp.conf
+
+- name: Enable the Dovecot antispam plugin to detect when a message moves between folders so we can pass it to sa-learn for training
+  copy: src=20-imap.conf dest=/etc/dovecot/conf.d/20-imap.conf
+
+- name: When mail is moved in or out of the Dovecot Spam folder, re-train using this script that sends the mail to spamassassin.
+  copy: src=sa-learn-pipe.sh dest=/usr/bin/sa-learn-pipe.sh mode=0755
+
+- name: Configure the antispam plugin to call sa-learn-pipe.sh
+  copy: src=99-local-spampd.conf dest=/etc/dovecot/conf.d/99-local-spampd.conf

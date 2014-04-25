@@ -1,0 +1,31 @@
+---
+
+- name: Install DKIM packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - opendkim
+    - opendkim-tools
+
+- name: Create opendkim directories
+  file: path={{ item }} state=directory
+  with_items:
+    - /etc/opendkim
+    - "'{{ user_home }}'/mail/dkim"
+
+- name: Create TrustedHosts file
+  copy: dest=/etc/opendkim/TrustedHosts content='127.0.0.1'
+
+- name: Copy openDKIM conf
+  copy: src=opendkim.conf dest=/etc/opendkim/opendkim.conf
+
+- name: Check whether we've already created a DKIM key
+  command: /usr/bin/test -e {{ user_home }}/mail/dkim/mail.private
+  register: has_dkim_key
+  ignore_errors: True
+
+- name: Create one if we didn't already
+  shell: opendkim-genkey -r -s mail -D {{ user_home }}/mail/dkim
+  when: has_dkim_key|failed
+
+- name: Give correct permissions to opendkim folder/files
+  file: path={{ user_home }}/mail/dkim owner=opendkim group=opendkim mode=0600 state=directory recurse=yes

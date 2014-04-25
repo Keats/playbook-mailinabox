@@ -1,0 +1,10 @@
+---
+
+locale: en_US.UTF-8
+user: user-data
+user_home: /home/{{ user }}
+db_path: "'{{ user_home }}'/mail/users.sqlite"
+
+# TO CONFIGURE
+hostname: mybox.com
+public_ip: 127.0.0.1

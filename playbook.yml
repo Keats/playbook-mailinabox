@@ -1,0 +1,15 @@
+---
+
+- name: Install a mail server
+  hosts: server
+  sudo: yes
+
+  roles:
+    #- common
+    #- mailinabox
+    #- dns
+    - mail
+    #- dkim
+    #- spamassassin
+    #- roundcube
+    #- nginx

@@ -1,0 +1,16 @@
+---
+
+- name: Creates the key
+  shell: openssl genrsa -des3 -passout pass:x -out /tmp/server.key 2048
+
+- name: Remove password and save it to the right location
+  shell: openssl rsa -passin pass:x -in /tmp/server.key -out {{ user_home }}/ssl/ssl_private_key.pem
+
+- name: Remove temporary password-laden key
+  file: path=/tmp/server.key state=absent
+
+- name: Request a certificate
+  shell: openssl req -new -key {{ user_home }}/ssl/ssl_private_key.pem -out {{ user_home }}/ssl/ssl_cert_sign_req.csr -subj "/C=/ST=/L=/O=/CN={{ hostname }}" 
+
+- name: Sign the certificate
+  shell: openssl x509 -req -days 365 -in {{ user_home }}/ssl/ssl_cert_sign_req.csr -signkey {{ user_home }}/ssl/ssl_private_key.pem -out {{ user_home }}/ssl/ssl_certificate.pem

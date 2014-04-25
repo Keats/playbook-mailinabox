@@ -1,0 +1,21 @@
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    mode = 0666
+    user = postfix
+    group = postfix
+  }
+}
+service lmtp {
+  unix_listener /var/spool/postfix/private/dovecot-lmtp {
+    user = postfix
+    group = postfix
+  }
+  inet_listener lmtp {
+    address = 127.0.0.1
+    port = 10026
+  }
+}
+
+protocol imap {
+  mail_max_userip_connections = 20
+}

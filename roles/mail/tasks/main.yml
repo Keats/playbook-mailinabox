@@ -1,0 +1,71 @@
+---
+
+- name: Install mail packages
+  apt: pkg={{ item }} state=present
+  with_items:
+    - postfix
+    - postgrey
+    - dovecot-core
+    - dovecot-imapd
+    - dovecot-lmtpd
+    - dovecot-sqlite
+    - sqlite3
+    - openssl
+
+- name: Enable the 'submission' port 587 listener
+  shell: sed -i "s/#submission/submission/" /etc/postfix/master.cf
+
+- name: Copy Postfix files
+  template: src={{ item.src }} dest=/etc/postfix/{{ item.dest }}
+  with_items:
+    - { src: 'postfix/main.cf.j2', dest: 'main.cf'}
+    - { src: 'postfix/virtual-alias-maps.cf.j2', dest: 'virtual-alias-maps.cf'}
+    - { src: 'postfix/virtual-mailbox-domains.cf.j2', dest: 'virtual-mailbox-domains.cf'}
+    - { src: 'postfix/virtual-mailbox-maps.cf.j2', dest: 'virtual-mailbox-maps.cf'}
+
+- name: Copy Dovecot files
+  template: src={{ item.src }} dest=/etc/dovecot/conf.d/{{ item.dest }}
+  with_items:
+    - { src: 'dovecot/10-mail.conf.j2', dest: '10-mail.conf'}
+    - { src: 'dovecot/10-auth.conf.j2', dest: '10-auth.conf'}
+    - { src: 'dovecot/10-master.conf.j2', dest: '10-master.conf'}
+    - { src: 'dovecot/10-ssl.conf.j2', dest: '10-ssl.conf'}
+    - { src: 'dovecot/15-lda.conf.j2', dest: '15-lda.conf'}
+    - { src: 'dovecot/auth-sql.conf.ext.j2', dest: 'auth-sql.conf.ext'}
+    - { src: 'dovecot/99-local.conf.j2', dest: '99-local.conf'}
+
+- name: Copy SQLite database
+  copy: src=users.sqlite dest={{ db_path }}
+
+- name: Configure the SQL to query for a user's password.
+  template: src=dovecot/dovecot-sql.conf.ext.j2 dest=/etc/dovecot/dovecot-sql.conf.ext mode=0600
+
+- name: Check if there's already a certificate or not 
+  command: /usr/bin/test -e {{ user_home }}/ssl/ssl_certificate.pem
+  register: has_certificate
+  ignore_errors: True
+
+- include: ssl.yml
+  when: has_certificate|failed
+
+- name: Ensure configuration files are owned by dovecot and not world readable
+  file: path=/etc/dovecot owner=mail group=dovecot mode=0640 state=directory recurse=yes
+
+- name: Ensure mailbox files have a directory that exists and are owned by the mail user
+  file: path={{ user_home }}/mail/mailboxes owner=mail group=mail state=directory recurse=yes
+
+- name: Allow mail-related ports in the firewall
+  shell: ufw allow {{ item }}
+  with_items:
+    - smtp
+    - submission
+    - imaps
+
+- include: dkim.yml
+
+- include: spamassassin.yml
+  notify:
+    - restart postfix
+    - restart dovecot
+    - restart opendkim
+    - restart spampd

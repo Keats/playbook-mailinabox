@@ -1,0 +1,10 @@
+---
+
+- name: Create mailinabox user
+  user: name={{ user }} state=present
+
+- name: Create the directories we will need in home
+  file: path={{ item }} state=directory
+  with_items:
+    - "'{{ user_home }}'/dns"
+    - "'{{ user_home }}'/ssl"

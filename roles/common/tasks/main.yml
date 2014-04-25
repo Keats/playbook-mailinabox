@@ -1,0 +1,31 @@
+---
+
+- name: Generate utf-8 locale
+  command: locale-gen {{ locale }}
+
+- name: Set the locale as default
+  command: update-locale LANG={{ locale }} LC_ALL={{ locale }} LC_TYPE={{ locale }} LC_MESSAGES={{ locale }}
+
+- name: Update the apt cache and upgrade
+  apt: update_cache=yes upgrade=yes
+
+- name: Install ntp, fail2ban, ufw and unattended-upgrades
+  apt: pkg={{ item }} state=present
+  with_items:
+    - ntp
+    - fail2ban
+    - ufw
+    - unattended-upgrades
+
+- name: Activate unattended-upgrades
+  copy: src=10periodic dest=/etc/apt/apt.conf.d/10periodic owner=root group=root
+
+- name: Disable SSH password authentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  notify: restart ssh
+
+- name: Allow SSH in ufw
+  command: ufw allow ssh
+
+- name: Start ufw
+  command: ufw --force enable

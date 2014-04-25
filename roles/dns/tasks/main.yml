@@ -1,0 +1,19 @@
+---
+
+- name: Create nsd user
+  user: name=nsd
+
+- name: Install nsd
+  apt: pkg=nsd state=present
+
+- name: Create nsd directory
+  file: path=/var/run/nsd state=directory
+
+- name: Create default zone
+  file: path={{ user_home }}/dns/{{ hostname }}.txt
+
+- name: Ensure the directory in home for dns is owned by the user
+  file: {{ user_home/dns }} state=directory owner={{ user }} group={{ user }}
+
+- name: Permit DNS queries on TCP/UDP in the firewall
+  shell: ufw allow domain

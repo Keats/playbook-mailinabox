@@ -1,0 +1,79 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+#myorigin = /etc/mailname
+
+#Set the banner (must have the hostname first, then anything)
+smtpd_banner={{ hostname }} ESMTP Hi, I'm a Mail-in-a-Box (Ubuntu/Postfix; see https://github.com/joshdata/mailinabox)
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+
+readme_directory = no
+
+# TLS parameters
+# Enable TLS and require it for all user authentication.
+#smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_cert_file={{ user_home }}/ssl/ssl_certificate.pem
+smtpd_tls_key_file={{ user_home }}/ssl/ssl_private_key.pem
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+# Who can send outbound mail?
+# permit_sasl_authenticated: Authenticated users (i.e. on port 587).
+# permit_mynetworks: Mail that originates locally.
+# reject_unauth_destination: No one else. (Permits mail whose destination is local and rejects other mail.)
+smtpd_relay_restrictions=permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination
+myhostname={{ hostname }}
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mydestination=localhost
+relayhost = 
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+mailbox_size_limit = 0
+recipient_delimiter = +
+
+# Have postfix listen on all network interfaces, set our name (the Debian default seems to be localhost),
+inet_interfaces = all
+
+smtpd_tls_auth_only=yes
+smtpd_tls_received_header=yes
+
+# When connecting to remote SMTP servers, prefer TLS.
+smtp_tls_security_level=may
+smtp_tls_loglevel=2
+
+# Postfix will query dovecot for user authentication.
+smtpd_sasl_type=dovecot
+smtpd_sasl_path=private/auth
+smtpd_sasl_auth_enable=yes
+
+# Who can send mail to us?
+# permit_sasl_authenticated: Authenticated users (i.e. on port 587).
+# permit_mynetworks: Mail that originates locally.
+# reject_rbl_client: Reject connections from IP addresses blacklisted in zen.spamhaus.org
+# check_policy_service: Apply greylisting using postgrey.
+smtpd_recipient_restrictions=permit_sasl_authenticated,permit_mynetworks,reject_rbl_client zen.spamhaus.org,check_policy_service inet:127.0.0.1:10023
+
+# Handle all local mail delivery by passing it directly to dovecot over LMTP.
+#virtual_transport=lmtp:unix:private/dovecot-lmtp
+virtual_transport=lmtp:[127.0.0.1]:10025
+virtual_mailbox_domains=sqlite:/etc/postfix/virtual-mailbox-domains.cf
+virtual_mailbox_maps=sqlite:/etc/postfix/virtual-mailbox-maps.cf
+virtual_alias_maps=sqlite:/etc/postfix/virtual-alias-maps.cf
+local_recipient_maps=$virtual_mailbox_maps
+smtpd_milters=inet:127.0.0.1:8891
+non_smtpd_milters=$smtpd_milters
+milter_default_action=accept
