@@ -5,9 +5,9 @@
   sudo: yes
 
   roles:
-    #- common
+    - common
+    - dns
+    - mail
+    - roundcube
+    - web
     - mailinabox
-    #- dns
-    #- mail
-    #- roundcube
-    #- web

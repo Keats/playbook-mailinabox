@@ -42,7 +42,7 @@ elif sys.argv[1] == "user" and sys.argv[2] in ("add", "password"):
       c.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, pw))
     except sqlite3.IntegrityError:
       print("User already exists.")
-      sys.exit(1)
+      sys.exit(0)
 
     conn.commit() # write it before next step
 
@@ -56,13 +56,13 @@ elif sys.argv[1] == "user" and sys.argv[2] in ("add", "password"):
     if "Spam" not in existing_mboxes: subprocess.check_call(["doveadm", "mailbox", "create", "-u", email, "-s", "Spam"])
 
     # Create the user's sieve script to move spam into the Spam folder, and make it owned by mail.
-    maildirstat = os.stat(env["STORAGE_ROOT"] + "/mail/mailboxes")
+    maildirstat = os.stat("{{ user_home }}" + "/mail/mailboxes")
     (em_user, em_domain) = email.split("@", 1)
-    user_mail_dir = env["STORAGE_ROOT"] + ("/mail/mailboxes/%s/%s" % (em_domain, em_user))
+    user_mail_dir = "{{ user_home }}" + ("/mail/mailboxes/%s/%s" % (em_domain, em_user))
     if not os.path.exists(user_mail_dir):
       os.makedirs(user_mail_dir)
       os.chown(user_mail_dir, maildirstat.st_uid, maildirstat.st_gid)
-    shutil.copyfile("conf/dovecot_sieve.txt", user_mail_dir + "/.dovecot.sieve")
+    shutil.copyfile("{{ user_home }}" + "/dovecot_sieve.txt", user_mail_dir + "/.dovecot.sieve")
     os.chown(user_mail_dir + "/.dovecot.sieve", maildirstat.st_uid, maildirstat.st_gid)
 
   elif sys.argv[2] == "password":
@@ -87,7 +87,7 @@ elif sys.argv[1] == "alias" and sys.argv[2] == "add" and len(sys.argv) == 5:
     c.execute("INSERT INTO aliases (source, destination) VALUES (?, ?)", (sys.argv[3], sys.argv[4]))
   except sqlite3.IntegrityError:
     print("Alias already exists.")
-    sys.exit(1)
+    sys.exit(0)
 
 elif sys.argv[1] == "alias" and sys.argv[2] == "remove" and len(sys.argv) == 4:
   c.execute("DELETE FROM aliases WHERE source=?", (sys.argv[3],))

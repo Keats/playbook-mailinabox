@@ -1,0 +1,13 @@
+server:
+  hide-version: yes
+
+  # identify the server (CH TXT ID.SERVER entry).
+  identity: ""
+
+  # The directory for zonefile: files.
+  zonesdir: "/etc/nsd/zones"
+  
+# ZONES
+zone:
+  name: {{ hostname }}
+  zonefile: {{ hostname }}.txt

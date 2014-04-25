@@ -1,0 +1,23 @@
+$ORIGIN {{ hostname }}.    ; default zone domain
+$TTL 86400           ; default time to live
+
+@ IN SOA ns1.{{ hostname }}.io. hostmaster.{{ hostname }}.io. (
+           2014042300     ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+           NS          ns1.{{ hostname }}.io.
+           NS          ns2.{{ hostname }}.io.
+           IN     A    188.226.143.96
+           MX     10   {{ hostname }}.io.
+
+           300    TXT  "v=spf1 mx -all"
+
+www        IN     A    {{ public_ip }}
+ns1        IN     A    {{ public_ip }}
+ns2        IN     A    {{ public_ip }}
+mail._domainkey IN  TXT ( "v=DKIM1; k=rsa; s=email; "
+    "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDYJL6AaRfSEwn7WhV0m2CJ/XzSR4QmmrI0jyQUB6p2KnQH1agZdXA2879DGqY7dOOraNf4/HIgTaPZ1hTNykdSAJIb+A3te9dkbvqv4fnEhU43J9pUzW050QtAFxO+CGnPSPj/vXX3fDWyo6vj4+wckZBoKEEfvlbwutFXhqfexwIDAQAB" )  ; ----- DKIM key mail for example.com

@@ -3,6 +3,9 @@
 - name: Copy mail.py tool
   template: src=mail.py.j2 dest={{ user_home }}/mail.py
 
+- name: Copy dovecot_sieve.txt
+  copy: src=dovecot_sieve.txt dest={{ user_home }}/dovecot_sieve.txt
+
 - name: Run mail.py commands
   shell: python3 {{ user_home }}/mail.py {{ item }}
   with_items: user_commands

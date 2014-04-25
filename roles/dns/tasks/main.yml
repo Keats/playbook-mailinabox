@@ -10,13 +10,34 @@
   file: path=/var/run/nsd state=directory
 
 - name: Create dns directory in user home
-  file: path= {{ user_home }}/dns state=directory
+  file: path={{ user_home }}/dns state=directory
 
 - name: Create default zone
   file: path={{ user_home }}/dns/{{ hostname }}.txt
 
 - name: Ensure the directory in home for dns is owned by the user
-  file: {{ user_home/dns }} state=directory owner={{ user }} group={{ user }}
+  file: path={{ user_home }}/dns state=directory owner={{ user }} group={{ user }}
 
 - name: Permit DNS queries on TCP/UDP in the firewall
   shell: ufw allow domain
+
+- name: Copy nsd conf
+  template: src=nsd.conf.j2 dest=/etc/nsd/nsd.conf
+
+- name: Create zones directory
+  file: path=/etc/nsd/zones state=directory
+
+- name: Copy zone config
+  template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt
+
+- name: Truncate OpenDKIM fles
+  shell: truncate --size 0 {{ item }}
+  with_items:
+    - /etc/opendkim/KeyTable
+    - /etc/opendkim/SigningTable
+
+- name: Append a record to OpenDKIM's KeyTable
+  shell: echo "{{ hostname }} {{ hostname }}:mail:'{{ user_home }}'/mail/dkim/mail.private" >> /etc/opendkim/KeyTable
+
+- name: Append a record to OpenDKIM's KeyTable
+  shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable

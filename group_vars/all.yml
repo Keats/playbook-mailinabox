@@ -17,3 +17,6 @@ user_commands:
   - user add someone@something.com password
   - alias add hostmaster@{{ hostname }} someone@something.com
   - alias add postmaster@{{ hostname }} someone@something.com
+
+users:
+  - someone@something.com
