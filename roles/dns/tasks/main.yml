@@ -31,15 +31,3 @@
   template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt
   notify:
     - restart nsd
-
-- name: Truncate OpenDKIM fles
-  shell: truncate --size 0 {{ item }}
-  with_items:
-    - /etc/opendkim/KeyTable
-    - /etc/opendkim/SigningTable
-
-- name: Append a record to OpenDKIM's KeyTable
-  shell: echo "{{ hostname }} {{ hostname }}:mail:{{ user_home }}/mail/dkim/mail.private" >> /etc/opendkim/KeyTable
-
-- name: Append a record to OpenDKIM's SigningTable
-  shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable

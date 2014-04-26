@@ -30,5 +30,17 @@
 - name: Give correct permissions to opendkim folder/files
   file: path={{ user_home }}/mail/dkim owner=opendkim group=opendkim mode=0600 state=directory recurse=yes
 
-- name: append opendkim key to the zone
+- name: Truncate OpenDKIM fles
+  shell: truncate --size 0 {{ item }}
+  with_items:
+    - /etc/opendkim/KeyTable
+    - /etc/opendkim/SigningTable
+
+- name: Append a record to OpenDKIM's KeyTable
+  shell: echo "{{ hostname }} {{ hostname }}:mail:{{ user_home }}/mail/dkim/mail.private" >> /etc/opendkim/KeyTable
+
+- name: Append a record to OpenDKIM's SigningTable
+  shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable
+
+- name: Append opendkim key to the zone
   shell: cat "{{ user_home }}/mail/dkim/mail.txt" >> /etc/nsd/zones/{{ hostname }}.txt;
