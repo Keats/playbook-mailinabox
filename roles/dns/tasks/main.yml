@@ -29,6 +29,8 @@
 
 - name: Copy zone config
   template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt
+  notify:
+    - restart nsd
 
 - name: Truncate OpenDKIM fles
   shell: truncate --size 0 {{ item }}
