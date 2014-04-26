@@ -1,7 +1,7 @@
 $ORIGIN {{ hostname }}.    ; default zone domain
 $TTL 86400           ; default time to live
 
-@ IN SOA ns1.{{ hostname }}.io. hostmaster.{{ hostname }}.io. (
+@ IN SOA ns1.{{ hostname }}. hostmaster.{{ hostname }}. (
            2014042300     ; serial number
            28800       ; Refresh
            7200        ; Retry
@@ -9,10 +9,10 @@ $TTL 86400           ; default time to live
            86400       ; Min TTL
            )
 
-           NS          ns1.{{ hostname }}.io.
-           NS          ns2.{{ hostname }}.io.
+           NS          ns1.{{ hostname }}.
+           NS          ns2.{{ hostname }}.
            IN     A    188.226.143.96
-           MX     10   {{ hostname }}.io.
+           MX     10   {{ hostname }}.
 
            300    TXT  "v=spf1 mx -all"
 
