@@ -24,8 +24,11 @@
   ignore_errors: True
 
 - name: Create one if we didn't already
-  shell: opendkim-genkey -r -s mail -D {{ user_home }}/mail/dkim
+  shell: opendkim-genkey -r -s mail -D {{ user_home }}/mail/dkim -d {{ hostname }}
   when: has_dkim_key|failed
 
 - name: Give correct permissions to opendkim folder/files
   file: path={{ user_home }}/mail/dkim owner=opendkim group=opendkim mode=0600 state=directory recurse=yes
+
+- name: append opendkim key to the zone
+  shell: cat "{{ user_home }}/mail/dkim/mail.txt" >> /etc/nsd/zones/{{ hostname }}.txt;

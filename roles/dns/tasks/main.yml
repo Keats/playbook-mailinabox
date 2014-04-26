@@ -41,5 +41,5 @@
 - name: Append a record to OpenDKIM's KeyTable
   shell: echo "{{ hostname }} {{ hostname }}:mail:{{ user_home }}/mail/dkim/mail.private" >> /etc/opendkim/KeyTable
 
-- name: Append a record to OpenDKIM's KeyTable
+- name: Append a record to OpenDKIM's SigningTable
   shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable

@@ -19,5 +19,3 @@ $TTL 86400           ; default time to live
 www        IN     A    {{ public_ip }}
 ns1        IN     A    {{ public_ip }}
 ns2        IN     A    {{ public_ip }}
-mail._domainkey IN  TXT ( "v=DKIM1; k=rsa; s=email; "
-    "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDYJL6AaRfSEwn7WhV0m2CJ/XzSR4QmmrI0jyQUB6p2KnQH1agZdXA2879DGqY7dOOraNf4/HIgTaPZ1hTNykdSAJIb+A3te9dkbvqv4fnEhU43J9pUzW050QtAFxO+CGnPSPj/vXX3fDWyo6vj4+wckZBoKEEfvlbwutFXhqfexwIDAQAB" )  ; ----- DKIM key mail for example.com
