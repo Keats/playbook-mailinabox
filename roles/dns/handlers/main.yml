@@ -2,6 +2,3 @@
 
 - name: restart nsd
   service: name=nsd state=restarted
-
-- name: restart opendkim
-  service: name=opendkim state=restarted

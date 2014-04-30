@@ -13,7 +13,7 @@
   file: path={{ user_home }}/dns state=directory
 
 - name: Create default zone
-  file: path={{ user_home }}/dns/{{ hostname }}.txt
+  file: path={{ user_home }}/dns/{{ hostname }}.txt state=touch owner={{ user }} group={{ user }}
 
 - name: Ensure the directory in home for dns is owned by the user
   file: path={{ user_home }}/dns state=directory owner={{ user }} group={{ user }}

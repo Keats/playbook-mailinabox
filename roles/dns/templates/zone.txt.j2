@@ -11,7 +11,7 @@ $TTL 86400           ; default time to live
 
            NS          ns1.{{ hostname }}.
            NS          ns2.{{ hostname }}.
-           IN     A    188.226.143.96
+           IN     A    {{ public_ip }}
            MX     10   {{ hostname }}.
 
            300    TXT  "v=spf1 mx -all"
