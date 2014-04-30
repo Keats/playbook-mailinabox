@@ -7,10 +7,7 @@
     - opendkim-tools
 
 - name: Create opendkim directories
-  file: path={{ item }} state=directory
-  with_items:
-    - /etc/opendkim
-    - "'{{ user_home }}'/mail/dkim"
+  file: path=/etc/opendkim/keys state=directory recurse=yes
 
 - name: Create TrustedHosts file
   copy: dest=/etc/opendkim/TrustedHosts content='127.0.0.1'
@@ -19,16 +16,19 @@
   copy: src=opendkim.conf dest=/etc/opendkim.conf
 
 - name: Check whether we've already created a DKIM key
-  command: /usr/bin/test -e {{ user_home }}/mail/dkim/mail.private
+  command: /usr/bin/test -e /etc/opendkim/keys/mail.private
   register: has_dkim_key
   ignore_errors: True
 
 - name: Create one if we didn't already
-  shell: opendkim-genkey -r -s mail -D {{ user_home }}/mail/dkim -d {{ hostname }}
+  shell: opendkim-genkey -r -s mail -D /etc/opendkim/keys -d {{ hostname }}
   when: has_dkim_key|failed
 
-- name: Give correct permissions to opendkim folder/files
-  file: path={{ user_home }}/mail/dkim owner=opendkim group=opendkim mode=0600 state=directory recurse=yes
+- name: Give correct permissions to opendkim keys
+  file: path=/etc/opendkim/keys/{{ item }} mode=0600
+  with_items:
+    - mail.private
+    - mail.txt
 
 - name: Truncate OpenDKIM fles
   shell: truncate --size 0 {{ item }}
@@ -37,7 +37,10 @@
     - /etc/opendkim/SigningTable
 
 - name: Append a record to OpenDKIM's KeyTable
-  shell: echo "{{ hostname }} {{ hostname }}:mail:{{ user_home }}/mail/dkim/mail.private" >> /etc/opendkim/KeyTable
+  shell: echo "{{ hostname }} {{ hostname }}:mail:/etc/opendkim/keys/mail.private" >> /etc/opendkim/KeyTable
 
 - name: Append a record to OpenDKIM's SigningTable
   shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable
+
+- name: Give correct permissions to opendkim folder/files in /etc
+  file: path=/etc/opendkim/ owner=opendkim group=opendkim state=directory recurse=yes
