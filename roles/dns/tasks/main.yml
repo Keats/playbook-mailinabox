@@ -13,7 +13,7 @@
   file: path={{ user_home }}/dns state=directory
 
 - name: Create default zone
-  file: path={{ user_home }}/dns/{{ hostname }}.txt state=touch owner={{ user }} group={{ user }}
+  file: path={{ user_home }}/dns/{{ hostname }}.txtit state=touch owner={{ user }} group={{ user }}
 
 - name: Ensure the directory in home for dns is owned by the user
   file: path={{ user_home }}/dns state=directory owner={{ user }} group={{ user }}
@@ -28,7 +28,7 @@
   file: path=/etc/nsd/zones state=directory
 
 - name: Copy zone config
-  template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt
+  template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt mode=0777 # todo find right perms
   notify:
     - restart nsd
 
