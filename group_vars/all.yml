@@ -8,6 +8,7 @@ roundcube_db_path: "{{ user_home }}/mail/roundcube/roundcube.sqlite"
 
 
 # TO CONFIGURE ===================
+timezone: Europe/London
 hostname: something.com
 public_ip: 127.0.0.1
 

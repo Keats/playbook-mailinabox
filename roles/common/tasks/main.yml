@@ -39,3 +39,6 @@
     - ssl
     - mail
     - dns
+
+- name: Set timezone
+  shell: echo '{{ timezone }}' > /etc/timezone

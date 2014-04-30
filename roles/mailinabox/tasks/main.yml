@@ -10,6 +10,7 @@
   shell: python3 {{ user_home }}/mail.py {{ item }}
   with_items: user_commands
   notify:
+    - restart nsd
     - restart dovecot
     - restart postfix
     - restart opendkim
