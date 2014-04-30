@@ -31,3 +31,8 @@
   template: src=zone.txt.j2 dest=/etc/nsd/zones/{{ hostname }}.txt
   notify:
     - restart nsd
+
+- name: Append opendkim key to the zone
+  shell: cat "{{ user_home }}/mail/dkim/mail.txt" >> /etc/nsd/zones/{{ hostname }}.txt;
+  notify:
+    - restart opendkim

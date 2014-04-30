@@ -16,7 +16,7 @@
   copy: dest=/etc/opendkim/TrustedHosts content='127.0.0.1'
 
 - name: Copy openDKIM conf
-  copy: src=opendkim.conf dest=/etc/opendkim/opendkim.conf
+  copy: src=opendkim.conf dest=/etc/opendkim.conf
 
 - name: Check whether we've already created a DKIM key
   command: /usr/bin/test -e {{ user_home }}/mail/dkim/mail.private
@@ -41,6 +41,3 @@
 
 - name: Append a record to OpenDKIM's SigningTable
   shell: echo "*@{{ hostname }} {{ hostname }}" >> /etc/opendkim/SigningTable
-
-- name: Append opendkim key to the zone
-  shell: cat "{{ user_home }}/mail/dkim/mail.txt" >> /etc/nsd/zones/{{ hostname }}.txt;
